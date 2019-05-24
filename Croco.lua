@@ -37,15 +37,12 @@ function processFades()
 		FADE.brightness=(FADE.brightness-1/16)
 		for color=0,15 do
 			if color==BGc then color=color+1 end
-			if color==16 then break end
 			local red=palRAM.R[color]
 			local green=palRAM.G[color]
 			local blue=palRAM.B[color]
 			Cset(color,red,green,blue)
 		end
 		if FADE.brightness<=0 then
-			if FADE.nextMode=="exit" then exit() end
-			if FADE.nextMode=="reset" then reset() end
 			if FADE.nextMusic~=nil then
 				local m=FADE.nextMusic
 				music(m[1],m[2],m[3]-1,m[4])
@@ -58,7 +55,6 @@ function processFades()
 		FADE.brightness=(FADE.brightness+1/16)
 		for color=0,15 do
 			if color==BGc then color=color+1 end
-			if color==16 then break end
 			local red=palRAM.R[color]
 			local green=palRAM.G[color]
 			local blue=palRAM.B[color]
@@ -78,10 +74,6 @@ function Iif(cond,t,f) return cond and t or f end
 --
 function exception(msg) trace(msg,6) exit() end
 
-if (BGc&15)==15 then 
-	exception("Color "..BGc.." isn't supported.")
-end
-
 -- This is used to distort the waveforms (see TIC function)
 function distortWaves()
 	local waveDistortRandom=math.random(0,1)*15
@@ -93,7 +85,7 @@ end
 
 GAME.numTeeth=math.max(GAME.numTeeth,2)  -- Lowest amount
 GAME.numTeeth=math.min(GAME.numTeeth,13) -- Highest amount
-GAME.numTeeth=math.floor(GAME.numTeeth+0.5)
+GAME.numTeeth=math.floor(GAME.numTeeth)
 
 -- This is how the bad tooth is randomly chosen!
 toothNo=math.random(1,GAME.numTeeth)
@@ -104,9 +96,9 @@ centerW=112-4*GAME.numTeeth
 function processGame(m)
 	if m==0 then -- Title screen
 		print("Press the spacebar or Enter to start!",1,84)
-		print("Last time: "..(pmem(0)//60).." seconds",1,91,Iif(BGc==15,0,15))
-		print("High score: "..pmem(1),1,98,Iif(BGc==15,0,15))
-		print("2018-2019 StinkerB06",1,130,Iif(BGc==15,0,15))
+		print("Last time: "..(pmem(0)//60).." seconds",1,91)
+		print("High score: "..pmem(1),1,98)
+		print("2018-2019 StinkerB06",1,130)
 		spr(14,207,103,-1,2,0,0,2,2)
 		map(0,0,13,9,68,4,1)
 		if keyp(48) or keyp(50) then
@@ -136,16 +128,16 @@ function processGame(m)
 			FADE.mode,FADE.nextMode,FADE.nextMusic="OUT",2,{newMusic,0,0,false}
 		end
 		--
-		print("Survival score: "..(GAME.toothCount),1,1,Iif(BGc==15,0,15))
-		print("Time: "..(GAME.frame//60).." seconds",1,8,Iif(BGc==15,0,15))
+		print("Survival score: "..(GAME.toothCount),1,1)
+		print("Time: "..(GAME.frame//60).." seconds",1,8)
 		GAME.frame=GAME.frame+1
 	elseif m==2 then -- Game over
 		local win="You did it!"
 		local death="You got bit by the crocodile's mouth!"
-		print(Iif(GAME.toothCount==GAME.numTeeth,win,death),1,1,Iif(BGc==15,0,15))
-		print("Press the spacebar or Enter to reset.",1,8,Iif(BGc==15,0,15))
+		print(Iif(GAME.toothCount==GAME.numTeeth,win,death),1,1)
+		print("Press the spacebar or Enter to reset.",1,8)
 		if highScore then 
-			print("New high score!",1,20,math.random(11,14)) 
+			print("New high score!",1,20,math.random(11,15)) 
 		end
 		if keyp(48) or keyp(50) then
 			sfx(2)
@@ -155,6 +147,9 @@ function processGame(m)
 	else exception("ERR: invalid state of GAME.mode") end
 end
 function TIC()
+	if (BGc&15)==15 then 
+		exception("Color "..BGc.." isn't supported.") return
+	end
 	processFades()
 	if FADE.mode=="OUT" then return end
 	cls(BGc)
