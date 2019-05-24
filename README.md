@@ -14,3 +14,5 @@ v1.0 REV A: Did a minor fix
 v1.1: Added audio, doubled the scale of my logo, added high scores, and re-positioned some things.
 
 v1.2: Fixed a bug where v1.1 would play the death sound instead of the victory jingle when winning a round from the 13th bad tooth. I also altered the music and added another cheat function.
+
+v1.3: Fixed the high-score saving system, changed some graphics, added fades between screens, and some other minor tweaks.
